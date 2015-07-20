@@ -1,2 +1,3 @@
-*.swp
-*:w
+.godeps
+pkg
+.swp

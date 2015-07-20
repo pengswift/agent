@@ -16,6 +16,7 @@ const (
 const (
 	MAX_PROTO_NUM   = 1000 //agent能处理的最大协议号
 	DEFAULT_MQ_SIZE = 512  //默认玩家异步消息大小
+	CUSTOM_TIMER    = 60   //玩家定时器间隔   //暂未使用
 )
 
 const (

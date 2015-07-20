@@ -2,9 +2,12 @@ package types
 
 import (
 	"crypto/rc4"
-	. "github.com/pengswift/libs/services/proto"
 	"net"
 	"time"
+)
+
+import (
+	. "github.com/pengswift/gamelibs/services/proto"
 )
 
 const (
@@ -16,12 +19,12 @@ const (
 
 type Session struct {
 	IP      net.IP
-	MQ      chan []byte              //返回給客户端的异步消息
+	MQ      chan []Game_Frame        //返回給客户端的异步消息
 	Encoder *rc4.Cipher              //加密器
 	Decoder *rc4.Cipher              //解密器
 	UserId  int32                    //玩家ID
 	GSID    string                   //游戏服ID;e.g.: game1, game2
-	Stream  GameService_PacketClient //后端游戏服数据流
+	Stream  GameService_StreamClient //后端游戏服数据流
 
 	Flag int32 //会话标记
 

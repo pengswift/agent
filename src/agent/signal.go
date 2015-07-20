@@ -1,11 +1,14 @@
 package main
 
 import (
-	log "github.com/pengswift/libs/nsq-logger"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+)
+
+import (
+	log "github.com/pengswift/gamelibs/nsq-logger"
 )
 
 import (
@@ -26,6 +29,7 @@ func sig_handler() {
 
 	for {
 		msg := <-ch
+		//当接收到关闭信号时，要等待所有agent协程退出
 		switch msg {
 		case syscall.SIGTERM: //关闭agent
 			close(die)

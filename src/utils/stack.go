@@ -1,8 +1,15 @@
 package utils
 
 import (
-	log "github.com/pengswift/libs/nsq-logger"
 	"runtime"
+)
+
+import (
+	"github.com/davecgh/go-spew/spew"
+)
+
+import (
+	log "github.com/pengswift/gamelibs/nsq-logger"
 )
 
 func PrintPanicStack(extras ...interface{}) {
@@ -16,8 +23,8 @@ func PrintPanicStack(extras ...interface{}) {
 			funcName, file, line, ok = runtime.Caller(i)
 		}
 
-		//for k := range extra {
-		//	log.Errorf("EXRAS#%v DATA:%v\n", k, spew.Sdump(extras[k]))
-		//}
+		for k := range extras {
+			log.Errorf("EXRAS#%v DATA:%v\n", k, spew.Sdump(extras[k]))
+		}
 	}
 }

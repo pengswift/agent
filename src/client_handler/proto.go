@@ -12,12 +12,12 @@ func (p auto_id) Pack(w *packet.Packet) {
 	w.WriteS32(p.F_id)
 }
 
-type command_result_info struct {
+type error_info struct {
 	F_code int32
 	F_msg  string
 }
 
-func (p command_result_info) Pack(w *packet.Packet) {
+func (p error_info) Pack(w *packet.Packet) {
 	w.WriteS32(p.F_code)
 	w.WriteString(p.F_msg)
 }
@@ -61,17 +61,11 @@ func (p seed_info) Pack(w *packet.Packet) {
 }
 
 type user_snapshot struct {
-	F_uid         int32
-	F_name        string
-	F_level       int32
-	F_current_exp int32
+	F_uid int32
 }
 
 func (p user_snapshot) Pack(w *packet.Packet) {
 	w.WriteS32(p.F_uid)
-	w.WriteString(p.F_name)
-	w.WriteS32(p.F_level)
-	w.WriteS32(p.F_current_exp)
 }
 
 func PKT_auto_id(reader *packet.Packet) (tbl auto_id, err error) {
@@ -81,7 +75,7 @@ func PKT_auto_id(reader *packet.Packet) (tbl auto_id, err error) {
 	return
 }
 
-func PKT_command_result_info(reader *packet.Packet) (tbl command_result_info, err error) {
+func PKT_error_info(reader *packet.Packet) (tbl error_info, err error) {
 	tbl.F_code, err = reader.ReadS32()
 	checkErr(err)
 
@@ -116,6 +110,9 @@ func PKT_user_login_info(reader *packet.Packet) (tbl user_login_info, err error)
 	tbl.F_device_name, err = reader.ReadString()
 	checkErr(err)
 
+	tbl.F_device_id, err = reader.ReadString()
+	checkErr(err)
+
 	tbl.F_device_id_type, err = reader.ReadS32()
 	checkErr(err)
 
@@ -137,15 +134,6 @@ func PKT_seed_info(reader *packet.Packet) (tbl seed_info, err error) {
 
 func PKT_user_snapshot(reader *packet.Packet) (tbl user_snapshot, err error) {
 	tbl.F_uid, err = reader.ReadS32()
-	checkErr(err)
-
-	tbl.F_name, err = reader.ReadString()
-	checkErr(err)
-
-	tbl.F_level, err = reader.ReadS32()
-	checkErr(err)
-
-	tbl.F_current_exp, err = reader.ReadS32()
 	checkErr(err)
 
 	return

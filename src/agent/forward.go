@@ -2,10 +2,11 @@ package main
 
 import (
 	"errors"
-	"io"
+)
 
-	log "github.com/pengswift/libs/nsq-logger"
-	. "github.com/pengswift/libs/services/proto"
+import (
+	log "github.com/pengswift/gamelibs/nsq-logger"
+	. "github.com/pengswift/gamelibs/services/proto"
 )
 
 import (
@@ -13,45 +14,26 @@ import (
 )
 
 var (
-	ERROR_NOT_AUTHORIZED = errors.New("User not authorized")
+	ERROR_STREAM_NOT_OPEN = errors.New("stream not opened yet")
 )
 
 // forward message to game server
+// 传送消息到游戏服务器
 func forward(sess *Session, p []byte) error {
-	pkt := &Game_Packet{
-		Ctrl:    Game_Message,
-		Content: p,
+	frame := &Game_Frame{
+		Type:    Game_Message,
+		Message: p,
 	}
 
-	if sess.Flag&SESS_AUTHORIZED != 0 {
-		// send the packet
-		if err := sess.Stream.Send(pkt); err != nil {
-			log.Critical(err)
-			return err
-		}
-		return nil
+	// 检查传输流是否打开
+	if sess.Stream == nil {
+		return ERROR_STREAM_NOT_OPEN
 	}
 
-	return ERROR_NOT_AUTHORIZED
-}
-
-// fetch messages for current session
-func fetcher_task(sess *Session) {
-	for {
-		in, err := sess.Stream.Recv()
-		//close signal
-		if err == io.EOF {
-			log.Trace(err)
-			return
-		}
-		if err != nil {
-			log.Critical(err)
-			return
-		}
-
-		switch in.Ctrl {
-		case Game_Message:
-			sess.MQ <- in.Content
-		}
+	//向game服务器传递数据
+	if err := sess.Stream.Send(frame); err != nil {
+		log.Error(err)
+		return err
 	}
+	return nil
 }
